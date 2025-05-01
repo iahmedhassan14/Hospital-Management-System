@@ -1,0 +1,117 @@
+﻿@model BookVM
+<section id="appointment" class="appointment section">
+
+    <!-- Section Title -->
+    <div class="container section-title aos-init aos-animate" data-aos="fade-up">
+        <h2>Edit Appointment</h2>
+        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+    </div><!-- End Section Title -->
+
+    <div class="container aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+
+        <form id="appointmentForm" method="post" role="form" class="php-email-form"
+              asp-action="Edit" asp-controller="Doctor">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="Appointment.Id" />
+
+            <div class="row">
+                <!-- Name -->
+                <div class="col-md-6 form-group">
+                    <input asp-for="Appointment.Name" class="form-control" placeholder="Your Name" required>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6 form-group">
+                    <input asp-for="Appointment.Phone" class="form-control" placeholder="Your Phone" required>
+                </div>
+
+                <!-- Date -->
+                <div class="col-md-6 form-group mt-3">
+                    <input asp-for="Appointment.Date" class="form-control datepicker" placeholder="Appointment Date" required>
+                </div>
+
+                <!-- Doctor -->
+                <div class="col-md-6 form-group mt-3">
+                    <select asp-for="Appointment.DoctorId" class="form-select" required>
+                        <option value="">-- Select Doctor --</option>
+                        @foreach (var doctor in Model.Doctors)
+                        {
+                            <option value="@doctor.Id">@doctor.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Appointment.DoctorId" class="text-danger"></span>
+                </div>
+
+                <!-- Message -->
+                <div class="col-12 form-group mt-3">
+                    <textarea asp-for="Appointment.Message" class="form-control" rows="5" placeholder="Message (Optional)"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="col-12 text-center mt-3">
+                    <div class="loading" style="display: none;">Loading...</div>
+                    <div class="sent-message" style="display: none;">Success!</div>
+                    <button type="submit" class="btn btn-primary">Update Appointment</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</section>
+
+<!-- Flatpickr JS and CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    flatpickr("#date", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minTime: "09:00",
+        maxTime: "21:00",
+        minuteIncrement: 30,
+        disable: [
+            function (date) {
+                // Disable Friday (5) and Saturday (6)
+                return (date.getDay() === 5 || date.getDay() === 6);
+            }
+        ],
+        minDate: "today" // disable past days
+    });
+</script>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Directly check for TempData on page load
+        window.onload = function() {
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: '@TempData["Success"]'
+                    });
+            </text>
+            TempData.Remove("Success"); // Clear after showing
+        }
+        else if (TempData["Error"] != null)
+        {
+            <text>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '@TempData["Error"]'
+                    });
+            </text>
+            TempData.Remove("Error"); // Clear after showing
+        }
+        };
+    </script>
+}
+
+

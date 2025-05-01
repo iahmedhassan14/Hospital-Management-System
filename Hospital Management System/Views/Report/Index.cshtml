@@ -1,0 +1,129 @@
+﻿@model IEnumerable<Appointment>
+
+@{
+    ViewData["Title"] = "Appointments";
+    var i = 1;
+}
+
+<div class="container">
+    <div class="row mb-3 align-items-center my-3">
+        <div class="col-md-6">
+            <h2 class="display-6">All Appointments</h2>
+        </div>
+        <div class="col-md-6 text-md-end text-start mt-2 mt-md-0">
+            <a href="/Doctor/Book" class="btn btn-success">Create</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Patient Name</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Doctor</th>
+                        <th scope="col">Message</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <th scope="row">@(i++)</th>
+                            <td>@item.Name</td>
+                            <td>@item.Phone</td>
+                            <td>@item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@item.Doctor?.Name</td>
+                            <td>
+                                @if (item.Message is not null && item.Message.Length > 50)
+                                {
+                                    @item.Message.Substring(0, 50)
+
+                                    <text>...</text>
+                                }
+                                else
+                                {
+                                    @item.Message
+                                }
+                            </td>
+                            <td>
+                                <a href="/Doctor/Edit/@item.Id" class="btn btn-warning">Edit</a>
+                                <button class="btn btn-danger delete-btn" data-id="@item.Id">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('.delete-btn').click(function () {
+                var id = $(this).data('id');
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '@Url.Action("Delete", "Doctor")',
+                            type: 'POST',
+                            data: {
+                                id: id,
+                                __RequestVerificationToken: token
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        response.message,
+                                        'success'
+                                    ).then(() => location.reload());
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        response.message,
+                                        'error'
+                                    );
+                                }
+                            },
+                            error: function () {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an error deleting the appointment.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        @if (TempData["Success"] != null)
+        {
+            <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '@TempData["Success"]'
+                        });
+            </text>
+        }
+        });
+    </script>
+}
+

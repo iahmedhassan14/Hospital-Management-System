@@ -1,7 +1,10 @@
 using System.Diagnostics;
 using Hospital_Management_System.Data;
 using Hospital_Management_System.Models;
+using Hospital_Management_System.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_Management_System.Controllers
 {
@@ -17,26 +20,6 @@ namespace Hospital_Management_System.Controllers
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-        public IActionResult Appointment() 
-        { 
-
-            return View();
-        }
-        public IActionResult Doctor() 
-        {
-            var Doctors = _context.Doctors;
-
-            return View(Doctors.ToList());
-        }
-        public IActionResult ListOfAppoint() 
-        { 
             return View();
         }
 
